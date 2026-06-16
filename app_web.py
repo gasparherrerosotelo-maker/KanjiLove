@@ -95,6 +95,10 @@ if 'kanjis' not in st.session_state: st.session_state.kanjis = []
 if 'espanol' not in st.session_state: st.session_state.espanol = []
 if 'lecturas' not in st.session_state: st.session_state.lecturas = []
 if 'respondido' not in st.session_state: st.session_state.respondido = False
+# --- AQUÍ ESTÁ LA CORRECCIÓN ---
+if 'kanji_actual' not in st.session_state: st.session_state.kanji_actual = ""
+if 'opciones' not in st.session_state: st.session_state.opciones = []
+if 'respuesta_correcta' not in st.session_state: st.session_state.respuesta_correcta = ""
 
 # ==========================================
 # 4. FUNCIONES LÓGICAS
