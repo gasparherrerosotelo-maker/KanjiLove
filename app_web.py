@@ -135,29 +135,20 @@ def preparar_siguiente_tarjeta():
     st.session_state.respondido = False
 
 def iniciar_nivel(nombre_hoja):
+    # Forzamos una comprobación de existencia para depurar
     if not os.path.exists(ARCHIVO_EXCEL):
-        st.error(f"No se encontró el archivo '{ARCHIVO_EXCEL}' en la misma carpeta que el código.")
+        st.error(f"¡ERROR! No encuentro el archivo: {os.getcwd()}/{ARCHIVO_EXCEL}")
         return
         
     try:
         df = pd.read_excel(ARCHIVO_EXCEL, sheet_name=nombre_hoja)
-        df = df.dropna(subset=['漢字'])
-        
-        st.session_state.kanjis = df['漢字'].tolist()
-        st.session_state.espanol = df['スペイン語'].tolist()
-        st.session_state.lecturas = [obtener_lectura(r) for _, r in df.iterrows()]
-        
-        st.session_state.pendientes = list(range(len(st.session_state.kanjis)))
-        random.shuffle(st.session_state.pendientes)
-        
-        st.session_state.aciertos = 0
-        st.session_state.intentos = 0
-        
-        preparar_siguiente_tarjeta()
+        # ... resto de tu código igual ...
         st.session_state.pantalla = 'juego'
         
     except Exception as e:
-        st.error(f"Error al leer la hoja '{nombre_hoja}': {e}")
+        # AQUÍ ES DONDE VEREMOS EL ERROR REAL
+        st.error(f"Error detallado: {str(e)}")
+        st.stop() # Esto detiene la ejecución para que el mensaje no desaparezca
 
 # ==========================================
 # 5. RENDERIZADO DE PANTALLAS (INTERFAZ)
