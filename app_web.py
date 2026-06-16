@@ -95,10 +95,6 @@ if 'kanjis' not in st.session_state: st.session_state.kanjis = []
 if 'espanol' not in st.session_state: st.session_state.espanol = []
 if 'lecturas' not in st.session_state: st.session_state.lecturas = []
 if 'respondido' not in st.session_state: st.session_state.respondido = False
-# --- AQUÍ ESTÁ LA CORRECCIÓN ---
-if 'kanji_actual' not in st.session_state: st.session_state.kanji_actual = ""
-if 'opciones' not in st.session_state: st.session_state.opciones = []
-if 'respuesta_correcta' not in st.session_state: st.session_state.respuesta_correcta = ""
 
 # ==========================================
 # 4. FUNCIONES LÓGICAS
@@ -139,20 +135,29 @@ def preparar_siguiente_tarjeta():
     st.session_state.respondido = False
 
 def iniciar_nivel(nombre_hoja):
-    # Forzamos una comprobación de existencia para depurar
     if not os.path.exists(ARCHIVO_EXCEL):
-        st.error(f"¡ERROR! No encuentro el archivo: {os.getcwd()}/{ARCHIVO_EXCEL}")
+        st.error(f"No se encontró el archivo '{ARCHIVO_EXCEL}' en la misma carpeta que el código.")
         return
         
     try:
         df = pd.read_excel(ARCHIVO_EXCEL, sheet_name=nombre_hoja)
-        # ... resto de tu código igual ...
+        df = df.dropna(subset=['漢字'])
+        
+        st.session_state.kanjis = df['漢字'].tolist()
+        st.session_state.espanol = df['スペイン語'].tolist()
+        st.session_state.lecturas = [obtener_lectura(r) for _, r in df.iterrows()]
+        
+        st.session_state.pendientes = list(range(len(st.session_state.kanjis)))
+        random.shuffle(st.session_state.pendientes)
+        
+        st.session_state.aciertos = 0
+        st.session_state.intentos = 0
+        
+        preparar_siguiente_tarjeta()
         st.session_state.pantalla = 'juego'
         
     except Exception as e:
-        # AQUÍ ES DONDE VEREMOS EL ERROR REAL
-        st.error(f"Error detallado: {str(e)}")
-        st.stop() # Esto detiene la ejecución para que el mensaje no desaparezca
+        st.error(f"Error al leer la hoja '{nombre_hoja}': {e}")
 
 # ==========================================
 # 5. RENDERIZADO DE PANTALLAS (INTERFAZ)
